@@ -1,0 +1,136 @@
+openapi: 3.0.3
+info:
+  title: Payment Initiation API
+  description: API aligned with BIAN Payment Initiation for Hiberus Test
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: PaymentInitiationPaymentOrders
+    description: Payment Order operations
+
+paths:
+  /payment-initiation/payment-orders:
+    post:
+      tags:
+        - PaymentInitiationPaymentOrders
+      summary: Initiate a payment order
+      operationId: initiatePayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInitiationRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentInitiationResponse'
+
+  /payment-initiation/payment-orders/{paymentOrderId}:
+    get:
+      tags:
+        - PaymentInitiationPaymentOrders
+      summary: Retrieve payment details
+      operationId: getPaymentDetails
+      parameters:
+        - name: paymentOrderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentOrderDetails'
+
+  /payment-initiation/payment-orders/{paymentOrderId}/status:
+    get:
+      tags:
+        - PaymentInitiationPaymentOrders
+      summary: Retrieve payment status
+      operationId: getPaymentStatus
+      parameters:
+        - name: paymentOrderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentStatusResponse'
+
+components:
+  schemas:
+    AccountReference:
+      type: object
+      properties:
+        iban:
+          type: string
+
+    Amount:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+
+    PaymentInitiationRequest:
+      type: object
+      required: [externalReference, debtorAccount, creditorAccount, instructedAmount, requestedExecutionDate]
+      properties:
+        externalReference:
+          type: string
+        debtorAccount:
+          $ref: '#/components/schemas/AccountReference'
+        creditorAccount:
+          $ref: '#/components/schemas/AccountReference'
+        instructedAmount:
+          $ref: '#/components/schemas/Amount'
+        remittanceInformation:
+          type: string
+        requestedExecutionDate:
+          type: string
+          format: date
+
+    PaymentInitiationResponse:
+      type: object
+      properties:
+        paymentOrderId:
+          type: string
+        status:
+          type: string
+
+    PaymentOrderDetails:
+      allOf:
+        - $ref: '#/components/schemas/PaymentInitiationRequest'
+        - type: object
+          properties:
+            paymentOrderId:
+              type: string
+            status:
+              type: string
+
+    PaymentStatusResponse:
+      type: object
+      properties:
+        paymentOrderId:
+          type: string
+        status:
+          type: string
+        lastUpdate:
+          type: string
+          format: date-time

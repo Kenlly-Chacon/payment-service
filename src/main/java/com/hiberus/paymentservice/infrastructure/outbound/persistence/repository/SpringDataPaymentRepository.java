@@ -1,4 +1,8 @@
 package com.hiberus.paymentservice.infrastructure.outbound.persistence.repository;
 
-public class SpringDataPaymentRepository {
+
+import com.hiberus.paymentservice.infrastructure.outbound.persistence.entity.PaymentOrderEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SpringDataPaymentRepository extends JpaRepository<PaymentOrderEntity, String> {
 }
